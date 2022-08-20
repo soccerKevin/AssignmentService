@@ -12,5 +12,5 @@ services:
       - "${PGPORT}:${PGPORT}"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      - ./sql/fixtures.sql:/docker-entrypoint-initdb.d/fixtures.sql
+      - ./db/config/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db/config/fixtures.sql:/docker-entrypoint-initdb.d/fixtures.sql
