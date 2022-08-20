@@ -1,15 +1,15 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv'
 dotenv.config();
-const express = require('express');
-const webpack = require('webpack');
-const path = require('path');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const { pool } = require('../../db/connect.js');
-
-const app = express();
-const configPath = path.resolve('webpack.config.js');
-const webpackConfig = require(configPath);
+import express from 'express'
+import webpack from 'webpack'
+import path from 'path'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import { connect } from 'sa/db/index.js'
+import webpackConfig from 'sa/webpack.config.js'
 const compiler = webpack(webpackConfig);
+
+const { pool } = connect
+const app = express();
 
 const port = 3000;
 

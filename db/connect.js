@@ -1,4 +1,5 @@
-const { Pool, Client } = require('pg')
+import pg from 'pg'
+const { Pool, Client } = pg
 
 const {
   NODE_ENV,
@@ -16,7 +17,7 @@ const envHosts = {
 
 const host = envHosts[NODE_ENV]
 
-const pool = new Pool({
+export const pool = new Pool({
   host,
   user: PGUSER,
   password: PGPASSWORD,
@@ -24,4 +25,3 @@ const pool = new Pool({
   port: PGPORT,
 })
 
-module.exports = { pool }

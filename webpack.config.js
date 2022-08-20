@@ -1,6 +1,6 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
+import path from 'path'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import Dotenv from 'dotenv-webpack'
 
 const config = {
   devtool: 'inline-source-map',
@@ -10,6 +10,7 @@ const config = {
   mode: 'development',
   module: {
     rules: [
+      { test: /\.m?js/, resolve: { fullySpecified: false } },
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
@@ -27,7 +28,7 @@ const config = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'public'),
+    path: path.resolve(path.dirname('./'), 'public'),
     clean: true,
     publicPath: '/',
   },
@@ -45,9 +46,9 @@ const config = {
   ],
   resolve: {
     alias: {
-      components: path.resolve(__dirname, './src/components'),
+      components: path.resolve(path.dirname('./'), './src/components'),
     },
   },
-};
+}
 
-module.exports = config;
+export default config;
