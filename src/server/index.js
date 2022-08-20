@@ -19,14 +19,18 @@ app.use(
   webpackDevMiddleware(compiler, {
     publicPath: webpackConfig.output.publicPath,
   })
-);
+)
+
+routers.forEach(({ route, router }) => {
+  app.use(route, router)
+})
 
 app.get('/test', async (req, res) => {
-  const r = await pool.query('SELECT * FROM course;');
-  console.log('r: ', r.rows);
-  res.send(r.rows);
-});
+  const r = await pool.query('SELECT * FROM course;')
+  console.log('r: ', r.rows)
+  res.send(r.rows)
+})
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}!`);
-});
+  console.log(`Listening on port ${port}!`)
+})
