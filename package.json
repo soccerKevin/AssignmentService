@@ -6,10 +6,12 @@
   "node": "v18.7.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/server/index.js",
+    "all": "docker compose -f docker-compose.yml -f docker-compose-server.yml up",
+    "dev": "NODE_ENV=dev node src/server/index.js",
     "watch": "webpack --watch",
     "start": "webpack serve --open",
-    "build": "webpack"
+    "build": "webpack",
+    "all-down": "docker compose -f docker-compose.yml -f docker-compose-server.yml down"
   },
   "author": "",
   "license": "UNLICENSED",

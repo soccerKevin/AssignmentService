@@ -27,6 +27,6 @@ app.get('/test', async (req, res) => {
   res.send(r.rows);
 });
 
-app.listen(port, function () {
+app.listen(port, () => {
   console.log(`Listening on port ${port}!`);
 });
