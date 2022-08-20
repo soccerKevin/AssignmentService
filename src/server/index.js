@@ -1,7 +1,10 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const webpack = require('webpack');
 const path = require('path');
 const webpackDevMiddleware = require('webpack-dev-middleware');
+const { pool } = require('../../db/connect.js');
 
 const app = express();
 const configPath = path.resolve('webpack.config.js');
@@ -18,9 +21,10 @@ app.use(
   })
 );
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve('public/index.html'));
-	// res.send('index.html')
+app.get('/test', async (req, res) => {
+  const r = await pool.query('SELECT * FROM course;');
+  console.log('r: ', r.rows);
+  res.send(r.rows);
 });
 
 app.listen(port, function () {

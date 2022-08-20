@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const config = {
   devtool: 'inline-source-map',
@@ -40,6 +41,7 @@ const config = {
       title: 'Basic Express React App',
       templateContent: "<div id='reactApp'></div>"
     }),
+    new Dotenv(),
   ],
   resolve: {
     alias: {
