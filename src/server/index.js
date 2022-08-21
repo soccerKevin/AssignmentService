@@ -4,9 +4,16 @@ import express from 'express'
 import webpack from 'webpack'
 import path from 'path'
 import webpackDevMiddleware from 'webpack-dev-middleware'
-import webpackConfig from 'sa/webpack.config.js'
-import routers from 'sa/src/server/routers/index.js'
 import bodyParser from 'body-parser'
+import webpackConfig from 'sa/webpack.config.js'
+import * as routers from 'sa/src/server/routers/index.js'
+import * as middlewares from 'sa/src/server/middleware/index.js'
+import { acceptParams } from './middleware/params.js'
+// import { middleware as resLogger } from './middleware/resLogger.js'
+
+
+const routersArray = Object.values(routers)
+const middlewareArray = Object.values(middlewares)
 
 const compiler = webpack(webpackConfig);
 
@@ -22,9 +29,17 @@ app.use(
 
 app.use(bodyParser.json());
 
-routers.forEach(({ path, router }) => {
+middlewareArray.forEach(({ path, middleware }) => {
+  path ||= '*'
+  app.use(path, middleware)
+})
+
+routersArray.forEach(({ path, router, acceptedParams }) => {
+  if (acceptedParams) app.use(path, acceptParams(acceptedParams))
   app.use(path, router)
 })
+
+// app.use(resLogger);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`)
