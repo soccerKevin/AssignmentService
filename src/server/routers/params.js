@@ -4,14 +4,21 @@ export const acceptParams = (accepted) => (req, res, next) => {
   req.accepted = {}
   accepted.forEach((param) => body[param] ? params[param] = body[param] : null)
   req.accepted.params = params
-  req.accepted.keys = keys(params)
-  req.accepted.vars = vars(params)
+  req.accepted.keys = keys(params).join(', ')
+  req.accepted.vars = vars(params).join(', ')
+  req.accepted.keyValues = keyValues(params).join(', ')
   req.accepted.values = values(params)
   next()
 }
 
-export const keys = (params) => Object.keys(params).join(', ')
+export const keys = (params) => Object.keys(params)
 
-export const vars = (params) => new Array(Object.keys(params).length).fill(0).map((elem, i) => `$${i + 1}`).join(', ')
+export const vars = (params) => new Array(Object.keys(params).length).fill(0).map((elem, i) => `$${i + 1}`)
+
+export const keyValues = (params) => {
+  const k = keys(params)
+  const v = values(params)
+  return k.map((key, i) => `${key} = '${v[i]}'`)
+}
 
 export const values = (params) => Object.values(params)
