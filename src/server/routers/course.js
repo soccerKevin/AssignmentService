@@ -1,12 +1,17 @@
 import express from 'express'
 import { connect } from 'sa/db/index.js'
-import { acceptParams } from './params.js'
 const { pool } = connect
 const router = express.Router()
 
-const accepted = ['id', 'name', 'startDate', 'endDate', 'credits', 'capacity']
-
-router.use('*', acceptParams(accepted))
+export const path = '/course'
+export const acceptedParams = [
+  'id',
+  'name',
+  'startDate',
+  'endDate',
+  'credits',
+  'capacity'
+]
 
 router.get('/:id', async ({ params: { id } }, res) => {
   const { rows } = await pool.query("SELECT * FROM course WHERE id=$1;", [id])
@@ -33,5 +38,4 @@ router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values 
   res.send(rows[0])
 })
 
-const path = '/course'
-export { path, router }
+export { router }

@@ -4,10 +4,12 @@ import express from 'express'
 import webpack from 'webpack'
 import path from 'path'
 import webpackDevMiddleware from 'webpack-dev-middleware'
+import bodyParser from 'body-parser'
 import webpackConfig from 'sa/webpack.config.js'
 import * as routers from 'sa/src/server/routers/index.js'
 import * as middlewares from 'sa/src/server/middleware/index.js'
-import bodyParser from 'body-parser'
+import { acceptParams } from './middleware/params.js'
+
 
 const routersArray = Object.values(routers)
 const middlewareArray = Object.values(middlewares)
@@ -30,7 +32,8 @@ middlewareArray.forEach(({ path, middleware }) => {
   app.use(path, middleware)
 })
 
-routersArray.forEach(({ path, router }) => {
+routersArray.forEach(({ path, router, acceptedParams }) => {
+  if (acceptedParams) app.use(path, acceptParams(acceptedParams))
   app.use(path, router)
 })
 
