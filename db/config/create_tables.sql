@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS course (
    start_date TIMESTAMP NOT NULL,
    end_date   TIMESTAMP NOT NULL,
    credits    INT NOT NULL,
-   capacity   INT NOT NULL,
+   capacity   INT NOT NULL DEFAULT 20,
    created_at TIMESTAMP NOT NULL DEFAULT now(),
    updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
@@ -39,7 +39,7 @@ CREATE TRIGGER set_meeting_time_updated_at
 CREATE TABLE IF NOT EXISTS student (
    id              SERIAL PRIMARY KEY,
    name            VARCHAR(255) NOT NULL,
-   credit_capacity INT,
+   credit_capacity INT DEFAULT 5,
    created_at      TIMESTAMP NOT NULL DEFAULT now(),
    updated_at      TIMESTAMP NOT NULL DEFAULT now()
 );
