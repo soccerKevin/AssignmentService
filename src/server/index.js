@@ -9,8 +9,6 @@ import webpackConfig from 'sa/webpack.config.js'
 import * as routers from 'sa/src/server/routers/index.js'
 import * as middlewares from 'sa/src/server/middleware/index.js'
 import { acceptParams } from './middleware/params.js'
-// import { middleware as resLogger } from './middleware/resLogger.js'
-
 
 const routersArray = Object.values(routers)
 const middlewareArray = Object.values(middlewares)
@@ -18,8 +16,7 @@ const middlewareArray = Object.values(middlewares)
 const compiler = webpack(webpackConfig);
 
 const app = express();
-
-const port = 3000;
+const port = process.env.SERVER_PORT
 
 app.use(
   webpackDevMiddleware(compiler, {
@@ -40,6 +37,7 @@ routersArray.forEach(({ path, router, acceptedParams }) => {
 })
 
 // app.use(resLogger);
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`)
