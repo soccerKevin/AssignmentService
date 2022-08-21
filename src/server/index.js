@@ -9,6 +9,7 @@ import webpackConfig from 'sa/webpack.config.js'
 import * as routers from 'sa/src/server/routers/index.js'
 import * as middlewares from 'sa/src/server/middleware/index.js'
 import { acceptParams } from './middleware/params.js'
+// import { middleware as resLogger } from './middleware/resLogger.js'
 
 
 const routersArray = Object.values(routers)
@@ -29,6 +30,7 @@ app.use(
 app.use(bodyParser.json());
 
 middlewareArray.forEach(({ path, middleware }) => {
+  path ||= '*'
   app.use(path, middleware)
 })
 
@@ -36,6 +38,8 @@ routersArray.forEach(({ path, router, acceptedParams }) => {
   if (acceptedParams) app.use(path, acceptParams(acceptedParams))
   app.use(path, router)
 })
+
+// app.use(resLogger);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`)
