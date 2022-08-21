@@ -4,18 +4,18 @@ import { acceptParams } from './params.js'
 const { pool } = connect
 const router = express.Router()
 
-const accepted = ['id', 'name', 'creditCapacity']
+const accepted = ['id', 'name', 'startDate', 'endDate', 'credits', 'capacity']
 
 router.use('*', acceptParams(accepted))
 
 router.get('/:id', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query("SELECT * FROM student WHERE id=$1;", [id])
+  const { rows } = await pool.query("SELECT * FROM course WHERE id=$1;", [id])
   res.send(rows[0])
 })
 
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
   const { rows } = await pool.query(`
-    INSERT INTO student (${keys})
+    INSERT INTO course (${keys})
     VALUES (${vars})
     RETURNING *;
   `, values)
@@ -25,7 +25,7 @@ router.post('', async ({ accepted: { keys, vars, values } }, res) => {
 
 router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values } }, res) => {
   const { rows } = await pool.query(`
-    UPDATE student SET ${keyValues}
+    UPDATE course SET ${keyValues}
     WHERE id = ${id}
     RETURNING ${keys};
   `)
@@ -33,5 +33,5 @@ router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values 
   res.send(rows[0])
 })
 
-const path = '/student'
+const path = '/course'
 export { path, router }

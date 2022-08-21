@@ -1,5 +1,2 @@
-import studentRouter from './student.js'
-
-export default [
-  studentRouter
-]
+export * as studentRouter from './student.js'
+export * as courseRouter from './course.js'

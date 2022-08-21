@@ -5,8 +5,12 @@ import webpack from 'webpack'
 import path from 'path'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackConfig from 'sa/webpack.config.js'
-import routers from 'sa/src/server/routers/index.js'
+import * as routers from 'sa/src/server/routers/index.js'
+import * as middlewares from 'sa/src/server/middleware/index.js'
 import bodyParser from 'body-parser'
+
+const routersArray = Object.values(routers)
+const middlewareArray = Object.values(middlewares)
 
 const compiler = webpack(webpackConfig);
 
@@ -22,7 +26,11 @@ app.use(
 
 app.use(bodyParser.json());
 
-routers.forEach(({ path, router }) => {
+middlewareArray.forEach(({ path, middleware }) => {
+  app.use(path, middleware)
+})
+
+routersArray.forEach(({ path, router }) => {
   app.use(path, router)
 })
 

@@ -11,7 +11,7 @@ export const acceptParams = (accepted) => (req, res, next) => {
   next()
 }
 
-export const keys = (params) => Object.keys(params)
+export const keys = (params) => Object.keys(params).map((key) => camelToSnakeCase(key))
 
 export const vars = (params) => new Array(Object.keys(params).length).fill(0).map((elem, i) => `$${i + 1}`)
 
@@ -22,3 +22,5 @@ export const keyValues = (params) => {
 }
 
 export const values = (params) => Object.values(params)
+
+const camelToSnakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
