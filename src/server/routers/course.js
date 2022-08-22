@@ -1,5 +1,6 @@
 import express from 'express'
 import { connect } from 'sa/db/index.js'
+import { letterGrades } from 'sa/src/constants/index.js'
 const { pool } = connect
 const router = express.Router()
 
@@ -16,6 +17,21 @@ export const acceptedParams = [
 router.get('/:id', async ({ params: { id } }, res) => {
   const { rows } = await pool.query("SELECT * FROM course WHERE id=$1;", [id])
   res.send(rows[0])
+})
+
+router.get('/:id/grade/average', async ({ params: { id } }, res) => {
+  const { rows } = await pool.query(`
+    SELECT
+      SUM(COALESCE(grade, 0)) as total,
+      COUNT(*) as count
+    FROM course_student
+    WHERE course_id=$1;`,
+    [id]
+  )
+  const { total, count } = rows[0]
+  const decimal = total / count;
+  const letter = letterGrades[Math.round(decimal)]
+  res.send({ average: { decimal, letter } })
 })
 
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
