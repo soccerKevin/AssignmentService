@@ -2,7 +2,7 @@ export const acceptParams = (accepted) => (req, res, next) => {
   const { body } = req
   const params = {}
   req.accepted = {}
-  accepted.forEach((param) => body[param] ? params[param] = body[param] : null)
+  accepted.forEach((param) => body[param] ? params[camelToSnakeCase(param)] = body[param] : null)
   req.accepted.params = params
   req.accepted.keys = keys(params).join(', ')
   req.accepted.vars = vars(params).join(', ')

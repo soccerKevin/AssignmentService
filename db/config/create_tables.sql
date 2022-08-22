@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS course_student (
    id         SERIAL PRIMARY KEY,
    student_id SERIAL REFERENCES student(id),
    course_id  SERIAL REFERENCES course(id),
+   grade      NUMERIC,
    created_at TIMESTAMP NOT NULL DEFAULT now(),
    updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
