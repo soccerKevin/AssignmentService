@@ -43,6 +43,21 @@ router.get('/:id/courses', async ({ params: { id } }, res) => {
   res.send(rows)
 })
 
+router.get('/:id/grade/average', async ({ params: { id } }, res) => {
+  const { rows } = await pool.query(`
+    SELECT
+      SUM(COALESCE(grade, 0)) AS total,
+      COUNT(*) as count
+    FROM course_student
+    WHERE student_id=$1;`,
+    [id]
+  )
+  const { total, count } = rows[0]
+  const decimal = total / count
+  const letter = toLetter(decimal)
+  res.send({ decimal, letter })
+})
+
 router.get('/:studentId/course/:courseId/grade', async ({ params: { studentId, courseId } }, res) => {
   const { rows } = await pool.query(`
     SELECT grade
@@ -50,7 +65,6 @@ router.get('/:studentId/course/:courseId/grade', async ({ params: { studentId, c
     WHERE student_id=$1 AND course_id=$2;`,
     [studentId, courseId]
   )
-  console.log('rows: ', rows)
   const { grade } = rows[0]
   const letter = toLetter(grade)
   res.send({ decimal: grade, letter })
