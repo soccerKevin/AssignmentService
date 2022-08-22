@@ -31,4 +31,15 @@ router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values 
   res.send(rows[0])
 })
 
+router.get('/:id/courses', async ({ params: { id } }, res) => {
+  const { rows } = await pool.query(`
+    SELECT course.id, name
+    FROM course
+    LEFT JOIN course_student ON course.id = course_student.course_id
+    WHERE course_student.student_id=$1;`,
+    [id]
+  )
+  res.send(rows)
+})
+
 export { router }
