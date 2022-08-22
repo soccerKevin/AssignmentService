@@ -73,12 +73,12 @@ INSERT INTO meeting_time (day, start, finish, course_id)
   FROM course
   WHERE name = 'History Civil War';
 
-INSERT INTO course_student (course_id, student_id)
-VALUES (1, 1),
-  (2, 1),
-  (3, 2),
-  (4, 2),
-  (1, 4),
-  (3, 4),
-  (5, 3),
-  (2, 3);
+INSERT INTO course_student (course_id, student_id, grade)
+VALUES (1, 1, 3.4),
+  (2, 1, 2.7),
+  (3, 2, 5),
+  (4, 2, 4.4),
+  (1, 4, 5),
+  (3, 4, 3.2),
+  (5, 3, 4),
+  (2, 3, 4.1);

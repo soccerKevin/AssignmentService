@@ -34,6 +34,17 @@ router.get('/:id/grade/average', async ({ params: { id } }, res) => {
   res.send({ average: { decimal, letter } })
 })
 
+router.get('/:id/students', async ({ params: { id } }, res) => {
+  const { rows } = await pool.query(`
+    SELECT student.id, name
+    FROM student
+    LEFT JOIN course_student ON student.id = course_student.student_id
+    WHERE course_student.course_id=$1;`,
+    [id]
+  )
+  res.send(rows)
+})
+
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
   const { rows } = await pool.query(`
     INSERT INTO course (${keys})
