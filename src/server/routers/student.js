@@ -1,5 +1,6 @@
 import express from 'express'
 import { connect } from 'sa/db/index.js'
+import { toLetter } from 'sa/src/helpers/grade.js'
 const { pool } = connect
 const router = express.Router()
 
@@ -40,6 +41,19 @@ router.get('/:id/courses', async ({ params: { id } }, res) => {
     [id]
   )
   res.send(rows)
+})
+
+router.get('/:studentId/course/:courseId/grade', async ({ params: { studentId, courseId } }, res) => {
+  const { rows } = await pool.query(`
+    SELECT grade
+    FROM course_student
+    WHERE student_id=$1 AND course_id=$2;`,
+    [studentId, courseId]
+  )
+  console.log('rows: ', rows)
+  const { grade } = rows[0]
+  const letter = toLetter(grade)
+  res.send({ decimal: grade, letter })
 })
 
 export { router }
