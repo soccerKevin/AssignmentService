@@ -3,7 +3,7 @@ import { connect } from 'sa/db/index.js'
 const { pool } = connect
 const router = express.Router()
 
-export const path = '/register'
+export const path = '/registration'
 export const acceptedParams = ['courseId', 'studentId']
 
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
