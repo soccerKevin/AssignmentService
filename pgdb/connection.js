@@ -17,11 +17,13 @@ const envHosts = {
 
 const host = envHosts[NODE_ENV]
 
-export const pool = new Pool({
+export const dbconn = new Pool({
   host,
   user: PGUSER,
   password: PGPASSWORD,
   database: PGDATABASE,
   port: PGPORT,
 })
+
+export default dbconn
 

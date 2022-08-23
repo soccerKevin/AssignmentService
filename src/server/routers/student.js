@@ -1,19 +1,18 @@
 import express from 'express'
-import { connect } from 'sa/db/index.js'
+import { dbconn } from 'sa/pgdb/connection.js'
 import { toLetter } from 'sa/src/helpers/grade.js'
-const { pool } = connect
 const router = express.Router()
 
 export const path = '/student'
 export const acceptedParams = ['id', 'name', 'creditCapacity']
 
 router.get('/:id', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query("SELECT * FROM student WHERE id=$1;", [id])
+  const { rows } = await dbconn.query("SELECT * FROM student WHERE id=$1;", [id])
   res.send(rows[0])
 })
 
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     INSERT INTO student (${keys})
     VALUES (${vars})
     RETURNING *;
@@ -23,7 +22,7 @@ router.post('', async ({ accepted: { keys, vars, values } }, res) => {
 })
 
 router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     UPDATE student SET ${keyValues}
     WHERE id = ${id}
     RETURNING ${keys};
@@ -33,7 +32,7 @@ router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values 
 })
 
 router.get('/:id/courses', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     SELECT course.id, name
     FROM course
     LEFT JOIN course_student ON course.id = course_student.course_id
@@ -44,7 +43,7 @@ router.get('/:id/courses', async ({ params: { id } }, res) => {
 })
 
 router.get('/:id/grade/average', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     SELECT
       SUM(COALESCE(grade, 0)) AS total,
       COUNT(*) as count
@@ -59,7 +58,7 @@ router.get('/:id/grade/average', async ({ params: { id } }, res) => {
 })
 
 router.get('/:studentId/course/:courseId/grade', async ({ params: { studentId, courseId } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     SELECT grade
     FROM course_student
     WHERE student_id=$1 AND course_id=$2;`,
