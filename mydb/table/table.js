@@ -11,11 +11,19 @@ class Table {
     this.data = []
   }
 
+  addIndex(field) {
+    this.indexedCols[field] = createBST([])
+  }
+
   addTrigger() {
 
   }
 
-  getRow({ filter }) {
+  getRowByIndex({ index }) {
+
+  }
+
+  findRow({ filter }) {
 
   }
 
