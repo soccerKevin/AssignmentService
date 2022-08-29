@@ -5,6 +5,8 @@ const isValidName = (name) => name && !name.match(/[`!@#$%^&*()+\-=\[\]{};':"\\|
 
 const isValidType = (type) => type && typesArray.includes(type)
 
+const filterProps = ({ type, indexed, unique }) => ({ type, indexed, unique })
+
 class Definition {
   constructor(columns) {
     this.cols = validateColumns(columns)
@@ -23,13 +25,16 @@ const validateColumns = (columns) => {
   if (!isPlainObject(columns))
     throw new Error('Invalid column definition: ', columns)
 
-  const cols = Object.entries.map(([n, { type: t, indexed=false, unique=false }]) => {
-    const name = n.toLowerCase()
-    const type = t.toLowerCase()
+  const cols = {}
 
-    if (!isValidName) throw new Error('Invalid column name: ', name, type)
-    if (!isValidType) throw new Error('Invalid column type: ', name, type)
-    return { name, props: { type, indexed } }
+  Object.entries(columns).forEach(([n, props]) => {
+    const name = n.toLowerCase()
+    const type = props.type.toLowerCase()
+
+    if (!isValidName(name)) throw new Error('Invalid column name: ', name, type)
+    if (!isValidType(type)) throw new Error('Invalid column type: ', name, type)
+
+    cols[name] = filterProps(props)
   })
 
   return cols

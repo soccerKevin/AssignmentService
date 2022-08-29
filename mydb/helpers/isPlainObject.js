@@ -8,5 +8,6 @@ export const isPlainObject = (obj) => {
   return isObject(obj)
     && isObject(proto)
     && proto.hasOwnProperty('isPrototypeOf')
-    && construct === undefined
 }
+
+export default isPlainObject
