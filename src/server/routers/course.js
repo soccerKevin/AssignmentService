@@ -1,7 +1,6 @@
 import express from 'express'
-import { connect } from 'sa/db/index.js'
+import dbconn from 'sa/pgdb/connection.js'
 import { toLetter } from 'sa/src/helpers/grade.js'
-const { pool } = connect
 const router = express.Router()
 
 export const path = '/course'
@@ -15,12 +14,12 @@ export const acceptedParams = [
 ]
 
 router.get('/:id', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query("SELECT * FROM course WHERE id=$1;", [id])
+  const { rows } = await dbconn.query("SELECT * FROM course WHERE id=$1;", [id])
   res.send(rows[0])
 })
 
 router.get('/:id/grade/average', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     SELECT
       SUM(COALESCE(grade, 0)) as total,
       COUNT(*) as count
@@ -35,7 +34,7 @@ router.get('/:id/grade/average', async ({ params: { id } }, res) => {
 })
 
 router.get('/:id/students', async ({ params: { id } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     SELECT student.id, name
     FROM student
     LEFT JOIN course_student ON student.id = course_student.student_id
@@ -46,7 +45,7 @@ router.get('/:id/students', async ({ params: { id } }, res) => {
 })
 
 router.post('', async ({ accepted: { keys, vars, values } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     INSERT INTO course (${keys})
     VALUES (${vars})
     RETURNING *;
@@ -56,7 +55,7 @@ router.post('', async ({ accepted: { keys, vars, values } }, res) => {
 })
 
 router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values } }, res) => {
-  const { rows } = await pool.query(`
+  const { rows } = await dbconn.query(`
     UPDATE course SET ${keyValues}
     WHERE id = ${id}
     RETURNING ${keys};
