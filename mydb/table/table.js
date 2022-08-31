@@ -2,17 +2,9 @@ import BST from '../helpers/bst.js'
 import Definition from './definition.js'
 
 class Table {
-  constructor(columns) {
-    this.definition = new Definition(columns)
-    this.indexedCols = {}
-    this.definition.getIndexes().forEach((colName) =>
-      this.indexedCols[colName] = new BST()
-    )
+  constructor(definition) {
+    this.definition = definition
     this.data = []
-  }
-
-  addIndex(field) {
-    this.indexedCols[field] = createBST([])
   }
 
   addTrigger() {

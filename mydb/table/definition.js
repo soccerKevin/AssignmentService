@@ -9,35 +9,51 @@ const filterProps = ({ type, indexed, unique }) => ({ type, indexed, unique })
 
 class Definition {
   constructor(columns) {
-    this.cols = validateColumns(columns)
+    const cols = validateColumns(columns)
+    this.cols = {}
+    cols.forEach(({ name, ...props }) => this.cols[name] = props)
   }
 
   indexedColumns() {
     if (this.indexes) return this.indexes
-    this.indexes = Object.entries(this.cols).map(([colName, { indexed }]) =>
-      indexed ? colName : null
+    this.indexes = Object.entries(this.cols).map(([name, { indexed }]) =>
+      indexed ? name : null
     ).filter((n) => n)
     return this.indexes
   }
+
+  // columns look like { name, type, indexed, unique }
+  addColumn(column) {
+    const { name, ...props } = validateColumn(column)
+    if (this.cols.name)
+      throw new Error(`Can't add column ${name}, already exists`)
+
+    this.cols[name] = props
+    this.indexes = null
+  }
+
+  removeColumn(columnName) {
+    if (!this.cols[columnName])
+      throw new Error(`Can't remove column ${columnName}, does not exist`)
+    delete this.cols[columnName]
+  }
 }
 
-const validateColumns = (columns) => {
-  if (!isPlainObject(columns))
-    throw new Error('Invalid column definition: ', columns)
+const validateColumns = (columns) =>
+  columns.map((column) => validateColumn(column))
 
-  const cols = {}
+const validateColumn = (column) => {
+  if (!isPlainObject(column))
+    throw new Error('Invalid column definition: ', column)
 
-  Object.entries(columns).forEach(([n, props]) => {
-    const name = n.toLowerCase()
-    const type = props.type.toLowerCase()
+  const { name: n, type: t, ...props } = column
+  const name = n.toLowerCase()
+  const type = t.toLowerCase()
 
-    if (!isValidName(name)) throw new Error('Invalid column name: ', name, type)
-    if (!isValidType(type)) throw new Error('Invalid column type: ', name, type)
+  if (!isValidName(name)) throw new Error('Invalid column name: ', name, type)
+  if (!isValidType(type)) throw new Error('Invalid column type: ', name, type)
 
-    cols[name] = filterProps(props)
-  })
-
-  return cols
+  return { name, type, ...props }
 }
 
 export default Definition
