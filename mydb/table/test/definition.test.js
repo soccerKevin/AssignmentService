@@ -1,9 +1,10 @@
 import Definition from '../definition.js'
+import Column from '../column.js'
 
 describe('definition', () => {
   const validDefinition = [
-    { name: 'column1', unique: true, indexed: true, type: 'string' },
-    { name: 'column2', unique: false, indexed: false, type: 'int' },
+    new Column({ name: 'column1', unique: true, indexed: true, type: 'string' }),
+    new Column({ name: 'column2', unique: false, indexed: false, type: 'int' }),
   ]
 
   test('valid definition is ok', () => {
@@ -15,11 +16,11 @@ describe('definition', () => {
   })
 
   test('invalid column name', () => {
-    expect(() => new Definition({ name: 'column.1', type: 'string' })).toThrow()
+    expect(() => new Definition(new Column({ name: 'column.1', type: 'string' }))).toThrow()
   })
 
   test('invalid column type', () => {
-    expect(() => new Definition({ name: 'column1', type: 'who' })).toThrow()
+    expect(() => new Definition(new Column({ name: 'column1', type: 'who' }))).toThrow()
   })
 
   describe('returns indexed columns', () => {
@@ -31,7 +32,7 @@ describe('definition', () => {
     })
 
     test('on add column', () => {
-      d.addColumn({ name: 'column3', indexed: true, type: 'string' })
+      d.addColumn(new Column({ name: 'column3', indexed: true, type: 'string' }))
       expect(d.indexedColumns()).toEqual(['column1', 'column3'])
     })
   })
