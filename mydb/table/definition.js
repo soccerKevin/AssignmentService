@@ -4,7 +4,10 @@ class Definition {
   constructor(columns) {
     validateColumns(columns)
     this.cols = {}
-    columns.forEach(({ name, ...props }) => this.cols[name] = props)
+    columns.forEach((column) => {
+      const { name, ...props } = column.getProps()
+      this.cols[name] = props
+    })
   }
 
   indexedColumns() {
@@ -17,17 +20,29 @@ class Definition {
 
   addColumn(column) {
     validateColumn(column)
-    const { name } = column
-    if (this.cols.name)
-      throw new Error(`Can't add column ${name}, already exists`)
+    const colProps = column.getProps()
+    const { name } = colProps
+    if (this.cols[name])
+      throw new Error(`Can't add column ${name}, it already exists`)
 
-    this.cols[name] = column
+    this.cols[name] = colProps
+    this.indexes = null
+  }
+
+  updateColumn() {
+    validateColumn(column)
+    const colProps = column.getProps()
+    const { name } = colProps
+    if (!this.cols[name])
+      throw new Error(`Can't update column ${name}, it does not exist`)
+
+    this.cols[name] = colProps
     this.indexes = null
   }
 
   removeColumn(columnName) {
     if (!this.cols[columnName])
-      throw new Error(`Can't remove column ${columnName}, does not exist`)
+      throw new Error(`Can't remove column ${columnName}, it does not exist`)
     delete this.cols[columnName]
   }
 }

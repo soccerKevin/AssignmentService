@@ -3,25 +3,25 @@ import compareStrings from './compareStrings.js'
 class Node {
   constructor({ field, index, left=null, right=null }) {
     this.field = field
-    this.index = index
+    this.indexes = [index]
     this.left = left
     this.right = right
   }
 
   find(field) {
-    if (this.field === field) return this.index
-
+    if (this.field === field)
+      return this.indexes
     if (field < this.field) {
-      if (!this.left) return null
-      return this.left.find(field)
+      return this.left?.find(field) || null
     } else {
-      if (!this.right) return null
-      return this.right.find(field)
+      return this.right?.find(field) || null
     }
   }
 
   add({ field, index }) {
-    if (field < this.field) {
+    if (field === this.field) {
+      this.indexes.push(index)
+    } else if (field < this.field) {
       if (!this.left)
         this.left = new Node({ field, index })
       else
@@ -36,9 +36,9 @@ class Node {
 
   inOrder() {
     const results = []
-    const { field, index } = this
+    const { field, indexes } = this
     if (this.left) results.push(this.left.inOrder())
-    results.push({ field, index })
+    results.push({ field, indexes })
     if (this.right) results.push(this.right.inOrder())
     return results.flat()
   }

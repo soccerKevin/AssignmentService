@@ -21,27 +21,31 @@ class Table {
     )
   }
 
-  addTrigger() {
+  addTrigger(trigger) {
+    if (!tigger instanceof Trigger)
+      throw new Error('Must be of a Trigger')
 
+    this.triggers[trigger.name] ||= []
+    this.triggers[trigger.name].push(trigger)
   }
 
   getRowByIndex({ index }) {
     return this.data[index]
   }
 
-  findRow({ filter }) {
+  readRow({ filter, props }) {
 
   }
 
-  addRow({ props }) {
+  createRow({ props }) {
 
   }
 
-  updateRow({ props, filter }) {
+  updateRow({ filter, props }) {
 
   }
 
-  removeRow({ filter }) {
+  deleteRow({ filter }) {
 
   }
 }

@@ -10,25 +10,38 @@ const base = {
   indexed: false,
   unique:  false,
 }
+
 const allowed = Object.keys(base)
 
 // columns look like { name, type, indexed, unique }
 class Column {
+  #props
   constructor(props) {
     const validatedProps = validateProps(props)
-    allowed.forEach((allowed) => this[allowed] = validatedProps[allowed])
+    this.#setProps({ ...base, ...validatedProps })
+  }
+
+  #setProps(props) {
+    allowed.forEach((field) => this[`#${field}`] = props[field])
+  }
+
+  getProps() {
+    if (this.#props) return this.#props
+    const acc = {}
+    allowed.forEach((field) => acc[field] = this[`#${field}`])
+    return this.#props = acc
   }
 }
 
 const validateProps = (column) => {
-  const { name: n, type: t, ...props } = column
+  const { name: n, type: t, indexed, unique } = column
   const name = n.toLowerCase()
   const type = t.toLowerCase()
 
-  if (!isValidName(name)) throw new Error('Invalid column name: ', name, type)
-  if (!isValidType(type)) throw new Error('Invalid column type: ', name, type)
+  if (!name || !isValidName(name)) throw new Error('Invalid column name: ', name, type)
+  if (!type || !isValidType(type)) throw new Error('Invalid column type: ', name, type)
 
-  return { name, type, ...props }
+  return { name, type, indexed, unique }
 }
 
 export default Column

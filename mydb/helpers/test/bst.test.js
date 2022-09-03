@@ -24,21 +24,20 @@ describe('db bst', () => {
   test('adds a low value', () => {
     bst.add('john', 6)
     expect(bst.length).toBe(6)
-    expect(bst.inOrder().map(({ field, index }) => index)).toEqual([4, 2, 6, 1, 3, 5])
+    expect(bst.inOrder().map(({ field, indexes }) => indexes).flat()).toEqual([4, 2, 6, 1, 3, 5])
   })
 
   test('adds a high value', () => {
     bst.add('zed', 6)
     expect(bst.length).toBe(6)
-
-    expect(bst.inOrder().map(({ field, index }) => index)).toEqual([4, 2, 1, 3, 5, 6])
+    expect(bst.inOrder().map(({ field, indexes }) => indexes).flat()).toEqual([4, 2, 1, 3, 5, 6])
   })
 
   test('finds a value', () => {
-    expect(bst.find('lisa')).toBe(3)
+    expect(bst.find('lisa')).toEqual([3])
   })
 
   test('in order', () => {
-    expect(bst.inOrder().map(({ field, index }) => index)).toEqual([4, 2, 1, 3, 5])
+    expect(bst.inOrder().map(({ field, indexes }) => indexes).flat()).toEqual([4, 2, 1, 3, 5])
   })
 })
