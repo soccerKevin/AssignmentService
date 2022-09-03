@@ -1,3 +1,5 @@
+import Struct from '../helpers/struct.js'
+
 export const ACTIONS = [
   'CREATE',
   'READ',
@@ -12,23 +14,6 @@ const base = {
 }
 
 const allowed = Object.keys(base)
-
-// triggers look like { columns, actions, function(row) }
-class Trigger {
-  constructor(props) {
-    const validatedProps = validateProps(props)
-    this.#setProps({ ...base, ...validatedProps })
-  }
-
-  #setProps(props) {
-    allowed.forEach((field) => this[field] = props[field])
-  }
-
-  getProps() {
-    if (this.#props) return this.#props
-    return this.#props = allowed.map((field) => this[`#${field}`])
-  }
-}
 
 const validateColumns = (columns) => {
   if (!columns) throw new Error('A trigger must have a column')
@@ -49,6 +34,14 @@ const validateProps = (props) => {
   validateActions(actions)
   validateFunc(func)
   return { columns, actions, func }
+}
+
+// triggers look like { columns, actions, function(row) }
+class Trigger extends Struct {
+  #props
+  constructor(props) {
+    super({ props, validateProps, allowed, base })
+  }
 }
 
 export default Trigger
