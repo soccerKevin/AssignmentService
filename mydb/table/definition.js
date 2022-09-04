@@ -3,7 +3,12 @@ import Column from './column.js'
 class Definition {
   constructor(columns) {
     validateColumns(columns)
-    this.cols = {}
+    this.cols = { id: new Column({
+      name:    'id',
+      type:    'int',
+      indexed: true,
+      unique:  true,
+    }) }
     columns.forEach((column) => {
       const { name, ...props } = column.getProps()
       this.cols[name] = props

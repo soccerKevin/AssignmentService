@@ -1,13 +1,21 @@
 class DB {
-  constructor() {
-    this.tables = []
+  constructor(tables) {
+    this.tables = {}
   }
 
-  createTable(name) {
+  addTable(table) {
 
   }
 
-  deleteTable(name) {
+  dropTable(table) {
+    if
+  }
+
+  search() {
+
+  }
+
+  join() {
 
   }
 }

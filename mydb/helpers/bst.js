@@ -1,16 +1,16 @@
 import compareStrings from './compareStrings.js'
 
 class Node {
-  constructor({ field, index, left=null, right=null }) {
+  constructor({ field, id, left=null, right=null }) {
     this.field = field
-    this.indexes = [index]
+    this.ids = [id]
     this.left = left
     this.right = right
   }
 
   find(field) {
     if (this.field === field)
-      return this.indexes
+      return this.ids
     if (field < this.field) {
       return this.left?.find(field) || null
     } else {
@@ -18,27 +18,27 @@ class Node {
     }
   }
 
-  add({ field, index }) {
+  add({ field, id }) {
     if (field === this.field) {
-      this.indexes.push(index)
+      this.ids.push(id)
     } else if (field < this.field) {
       if (!this.left)
-        this.left = new Node({ field, index })
+        this.left = new Node({ field, id })
       else
-        this.left.add({ field, index })
+        this.left.add({ field, id })
     } else {
       if (!this.right)
-        this.right = new Node({ field, index })
+        this.right = new Node({ field, id })
       else
-        this.right.add({ field, index })
+        this.right.add({ field, id })
     }
   }
 
   inOrder() {
     const results = []
-    const { field, indexes } = this
+    const { field, ids } = this
     if (this.left) results.push(this.left.inOrder())
-    results.push({ field, indexes })
+    results.push({ field, ids })
     if (this.right) results.push(this.right.inOrder())
     return results.flat()
   }
@@ -67,8 +67,8 @@ class BST {
     this.length = 0
 
     if (values) {
-      for (const { field, index } of values)
-        if (!field || !index) throw new Error('values must be in the form { field, index }')
+      for (const { field, id } of values)
+        if (!field || !id) throw new Error('values must be in the form { field, id }')
 
       this.length = values.length
       this.values = values.sort(({ field: a }, { field: b }) => compareStrings(a, b))
@@ -87,11 +87,11 @@ class BST {
     return this.head.inOrder()
   }
 
-  add(field, index) {
+  add(field, id) {
     this.length += 1
     if (!this.head)
-      this.head = new Node({ field, index })
-    this.head.add({ field, index })
+      this.head = new Node({ field, id })
+    this.head.add({ field, id })
   }
 }
 
