@@ -191,6 +191,20 @@ class Table {
 
   deleteRow(where) {
     const rowsToDelete = this.findRows(where)
+    for (let row of rowsToDelete) {
+      Object.entries(row).forEach(([col, value]) => {
+        // delete value from unique hashes
+        if (this.#uniqueHashes[col])
+          this.#uniqueHashes[col][value] = undefined
+
+        // delete id from indexes
+        if (this.#indexes[col])
+          this.#indexes[col].remove(value, row.id)
+      })
+
+      // update rows in this.#data with new row
+      this.#data[row.id] = row
+    }
     const result = rowsToDelete.forEach((row) => this.#data[row.id] = null)
   }
 }

@@ -1,7 +1,7 @@
 import Table from '../table.js'
-import Where from '../where.js'
+import Where from '../../where.js'
 
-import { validDefinition, data } from 'sa/test/fixtures.js'
+import { validDefinition, data } from 'sa/test/fixtures/table.js'
 
 describe('table', () => {
   describe('create', () => {
@@ -29,7 +29,6 @@ describe('table', () => {
       })
 
       test('will not insert non unique values', () => {
-        console.log('data: ', data[0])
         expect(() => table.insertRow(data[0])).toThrow()
       })
     })
