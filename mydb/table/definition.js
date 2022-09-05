@@ -15,12 +15,28 @@ class Definition {
     })
   }
 
+  getCols(row) {
+    const allowed = {}
+    Object.keys(this.cols).forEach((col) => {
+      allowed[col] = row[col]
+    })
+    return allowed
+  }
+
   indexedColumns() {
     if (this.indexes) return this.indexes
-    this.indexes = Object.entries(this.cols).map(([name, { indexed, unique }]) =>
-      indexed || unique ? name : null
+    this.indexes = Object.entries(this.cols).map(([name, { indexed }]) =>
+      indexed ? name : null
     ).filter((n) => n)
     return this.indexes
+  }
+
+  uniqueColumns() {
+    if (this.uniqueCols) return this.uniqueCols
+    this.uniqueCols = Object.entries(this.cols).map(([name, { unique }]) =>
+      unique ? name : null
+    ).filter((n) => n)
+    return this.uniqueCols
   }
 
   addColumn(column) {

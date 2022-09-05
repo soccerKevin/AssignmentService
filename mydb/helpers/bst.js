@@ -18,19 +18,37 @@ class Node {
     }
   }
 
-  add({ field, id }) {
+  remove(field, id) {
+    if (this.field === field) {
+      const idIndex = this.ids.indexOf(id)
+      if (idIndex) {
+        // remove the id
+        this.ids = this.ids.splice(idIndex, 1)
+        return true
+      }
+      return false
+    }
+
+    if (field < this.field) {
+      return this.left?.remove(field) || false
+    } else {
+      return this.right?.remove(field) || false
+    }
+  }
+
+  add(field, id) {
     if (field === this.field) {
       this.ids.push(id)
     } else if (field < this.field) {
       if (!this.left)
         this.left = new Node({ field, id })
       else
-        this.left.add({ field, id })
+        this.left.add(field, id)
     } else {
       if (!this.right)
         this.right = new Node({ field, id })
       else
-        this.right.add({ field, id })
+        this.right.add(field, id)
     }
   }
 
@@ -91,7 +109,13 @@ class BST {
     this.length += 1
     if (!this.head)
       this.head = new Node({ field, id })
-    this.head.add({ field, id })
+    this.head.add(field, id)
+  }
+
+  remove(field, id) {
+    this.length += 1
+    if (!this.head) return false
+    return this.head.remove(field, id)
   }
 }
 
