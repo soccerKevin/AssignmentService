@@ -49,6 +49,7 @@ class Table {
 
   // returns true if row matches
   #rowDoesMatch(row, wheres) {
+    if (!wheres.length) return []
     for (let where of wheres) {
       if (!where.compare(row[where.field]))
         return false
@@ -58,29 +59,19 @@ class Table {
 
   findRows(wheres) {
     let result = []
-    let id, ids, idWhere, idsWhere
+    let idWhere
 
-    // search for id, ids in wheres
-    for (let [i, where] of wheres.entries()) {
-      if (where.field === 'id') {
-        idWhere = where
-        wheres.splice(i, 1) // don't double check id
-        break
-      }
-      if (where.field === 'ids') {
-        idsWhere = where
-        wheres.splice(i, 1) // don't double check ids
-        break
-      }
-    }
+    // search for id in wheres
+    idWhere = wheres.find((where) => where.field === 'id')
 
     // filter by indexed fields first (id, ids)
     if (idWhere) {
-      result.push(this.#getRowByIndex(idWhere.value))
-    } else if (idsWhere) {
-      result = idsWhere.value.map((id) => {
-        return this.#getRowByIndex(id)
-      })
+      const id = idWhere.value
+      if (id instanceof Array) {
+        result = id.map((id) => this.#getRowByIndex(id))
+      } else {
+        result.push(this.#getRowByIndex(id))
+      }
     }
 
     // narrow result further by looking up indexed fields

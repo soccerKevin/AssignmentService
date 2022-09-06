@@ -38,7 +38,7 @@ describe('table', () => {
 
       beforeEach(() => {
         whereId = new Where({ field: 'id', comparison: '=', value: 0 })
-        whereIds = new Where({ field: 'ids', comparison: '=[]', value: [0, 1] })
+        whereIds = new Where({ field: 'id', comparison: '=[]', value: [0, 1] })
         whereAddress = new Where({ field: 'address', comparison: '=', value: data[1].address })
         whereGrade = new Where({ field: 'grade', comparison: '=', value: 4 })
       })
@@ -46,12 +46,6 @@ describe('table', () => {
       test('finds by id', () => {
         const result = table.findRows([whereId])
         expect(result[0]).toEqual({ id: 0, ...data[0] })
-      })
-
-      test('finds by ids', () => {
-        const result = table.findRows([whereIds])
-        expect(result[0]).toEqual({ id: 0, ...data[0] })
-        expect(result[1]).toEqual({ id: 1, ...data[1] })
       })
 
       test('finds by ids', () => {

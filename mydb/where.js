@@ -26,7 +26,7 @@ class Where {
   }
 
   equalsAny(record, checks) {
-    return checks.includes(record)
+    return !!checks.filter((check) => record.toString() === check.toString()).length
   }
 
   isGreaterThan(record, check) {
@@ -38,7 +38,7 @@ class Where {
   }
 
   compare(record) {
-    return this[this.comparison](record, this.value)
+    return this[this.comparison](record, [this.value].flat())
   }
 }
 
