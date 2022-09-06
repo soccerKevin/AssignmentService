@@ -1,4 +1,5 @@
 import Table from './table/table.js'
+import Where from './where.js'
 
 class DB {
   constructor() {
@@ -42,21 +43,19 @@ class DB {
 
   // delete rows in table
   delete(search) {
-    const results = []
     const { table, wheres } = search.getProps()
-    wheres.forEach((where) => {
-      results.push(this.tables[table].deleteRow(where))
-    })
-    return results
+    return this.tables[table].deleteRows(wheres)
   }
 
   // left search = first search to execute
   // right search = second search to execute
-  // type is one of [left, right, inner, outer]
+  // type is one of [left, right, inner, outer] (not yet working)
   // will join on leftSearchResult[leftColumn] == rightSearchResult[rightColumn]
-  join({ leftSearch, rightSearch, type, leftColumn, rightColumn }) {
+  join({ leftSearch, rightSearch, leftColumn, rightColumn, type }) {
     const leftResult = this.find(leftSearch)
     const rightResult = this.find(rightSearch)
+
+
   }
 }
 

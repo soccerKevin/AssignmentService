@@ -32,5 +32,10 @@ describe('db', () => {
       expect(result.length).toBe(1)
       expect(result[0]).toEqual({ id: 1, ...courseData[1], ...newProps })
     })
+
+    test('deletes a rowasdf', () => {
+      db.delete(search)
+      expect(db.find(search)).toEqual([])
+    })
   })
 })

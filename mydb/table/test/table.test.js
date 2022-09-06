@@ -77,7 +77,7 @@ describe('table', () => {
       })
 
       test('updates', () => {
-        table.updateRows(whereId0, { grade: 1 })
+        table.updateRows([whereId0], { grade: 1 })
         expect(table.findRows([whereId0])[0].grade).toBe(1)
       })
 

@@ -60,33 +60,43 @@ class Table {
   findRows(wheres) {
     let result = []
     let idWhere
+    let searchEverything = true
 
     // search for id in wheres
     idWhere = wheres.find((where) => where.field === 'id')
 
     // filter by indexed fields first (id, ids)
     if (idWhere) {
+      searchEverything = false
       const id = idWhere.value
       if (id instanceof Array) {
         result = id.map((id) => this.#getRowByIndex(id))
       } else {
-        result.push(this.#getRowByIndex(id))
+        const row = this.#getRowByIndex(id)
+        if (row) result.push(row)
       }
-    }
+    } else {
+      // narrow result by looking up indexed fields
+      for (let { field, value } of wheres) {
+        const index = this.#indexes[field]
+        if (index) {
+          searchEverything = false
+          let foundIds
 
-    // narrow result further by looking up indexed fields
-    for (let { field, value } of wheres) {
-      const index = this.#indexes[field]
-      if (index) {
-        const foundIds = index.find(value)
-        if (foundIds)
-          result.concat(foundIds.map((id) => this.#data[id]))
+          if (value instanceof Array)
+            foundIds = value.map((v) => index.find(v)).flat()
+          else
+            foundIds = index.find(value)
+
+          if (foundIds)
+            result = foundIds.map((id) => this.#data[id])
+        }
       }
     }
 
     // Hopefully indexed fields have narrowed the search
     // But if not, search through everything!!!
-    const toSearch = result.length ? result : this.#data
+    const toSearch = searchEverything ? this.#data : result
     return toSearch.filter((row) => this.#rowDoesMatch(row, wheres))
   }
 
@@ -149,7 +159,7 @@ class Table {
         if (uniques[col][value])
           throw new Error(`${col}: ${value} is not unique`)
 
-        uniques[col][value] = true
+        uniques[col][value] = row.id
       })
 
       // verify uniqueness compared to rest of db
@@ -182,8 +192,8 @@ class Table {
     return rowsToUpdate
   }
 
-  deleteRow(where) {
-    const rowsToDelete = this.findRows(where)
+  deleteRows(wheres) {
+    const rowsToDelete = this.findRows(wheres)
     for (let row of rowsToDelete) {
       Object.entries(row).forEach(([col, value]) => {
         // delete value from unique hashes
