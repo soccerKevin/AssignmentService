@@ -36,18 +36,16 @@ class DB {
 
   // update rows in table
   update(search, props) {
-    const results = []
-    search.wheres.forEach((where) => {
-      results.push(this.tables[search.table].updateRows(where, props))
-    })
-    return results
+    const { table, wheres } = search.getProps()
+    return this.tables[table].updateRows(wheres, props)
   }
 
   // delete rows in table
   delete(search) {
     const results = []
-    search.wheres.forEach((where) => {
-      results.push(this.tables[search.table].deleteRow(where))
+    const { table, wheres } = search.getProps()
+    wheres.forEach((where) => {
+      results.push(this.tables[table].deleteRow(where))
     })
     return results
   }

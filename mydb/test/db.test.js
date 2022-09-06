@@ -13,17 +13,24 @@ describe('db', () => {
     db.insert('course', courseData)
   })
 
-  describe('find search', () => {
-    let search
+  describe('', () => {
+    let search, whereId1
 
-    beforeEach(() => {
-      const whereId1 = new Where({ field: 'id', comparison: '=', value: 1 })
+    beforeAll(() => {
+      whereId1 = new Where({ field: 'id', comparison: '=', value: 1 })
       search = new Search({ table: 'course', wheres: [whereId1] })
     })
 
     test('finds a row', () => {
       expect(db.find(search).length).toBe(1)
       expect(db.find(search)[0]).toEqual({ id: 1, ...courseData[1] })
+    })
+
+    test('updates a row', () => {
+      const newProps = { credits: 5, capacity: 2 }
+      const result = db.update(search, newProps)
+      expect(result.length).toBe(1)
+      expect(result[0]).toEqual({ id: 1, ...courseData[1], ...newProps })
     })
   })
 })

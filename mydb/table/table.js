@@ -125,8 +125,8 @@ class Table {
     return clone
   }
 
-  updateRows(where, props) {
-    const foundRows = this.findRows([where])
+  updateRows(wheres, props) {
+    const foundRows = this.findRows(wheres)
     const updateData = {}
     // keep track of what is being updated
     foundRows.map((row) => updateData[row.id] = { found: row })
@@ -178,6 +178,8 @@ class Table {
       // update rows in this.#data with new row
       this.#data[row.id] = row
     }
+
+    return rowsToUpdate
   }
 
   deleteRow(where) {
