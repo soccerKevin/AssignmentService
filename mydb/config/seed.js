@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import zip from '../helpers/zip.js'
 
 const rand = (high) => Math.floor(Math.random() * high) + 1
 
@@ -6,14 +7,6 @@ const randomDay = () => rand(7)
 
 const randomStartTime = () =>
   rand(14) + 7 // between 7am & 9pm
-
-const zip = (array1, array2) => {
-  const zipped = []
-  for (let i = 0; i < array1.length; i++) {
-    zipped.push([array1[i], array2[i]])
-  }
-  return zipped
-}
 
 const seedCourses = (db) => {
   let name, start_date, end_date, credits, capacity, row

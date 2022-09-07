@@ -23,8 +23,8 @@ const studentDefinition = new Definition([
 ])
 
 const courseStudentDefinition = new Definition([
-  new Column({ name: 'student_id', unique: false, indexed: true, type: 'int' }),
-  new Column({ name: 'course_id',  unique: false, indexed: true, type: 'int' }),
+  new Column({ name: 'student_id', unique: false, indexed: true,  type: 'int' }),
+  new Column({ name: 'course_id',  unique: false, indexed: true,  type: 'int' }),
   new Column({ name: 'grade',      unique: false, indexed: false, type: 'int' }),
 ])
 

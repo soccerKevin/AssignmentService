@@ -1,6 +1,7 @@
 import BST from '../helpers/bst.js'
 import Definition from './definition.js'
 import { ACTIONS as TRIGGER_ACTIONS } from './trigger.js'
+import zip from '../helpers/zip.js'
 
 class Table {
   #data
@@ -97,7 +98,9 @@ class Table {
     // Hopefully indexed fields have narrowed the search
     // But if not, search through everything!!!
     const toSearch = searchEverything ? this.#data : result
-    return toSearch.filter((row) => this.#rowDoesMatch(row, wheres))
+    return toSearch.filter((row) => {
+      if (row) return this.#rowDoesMatch(row, wheres)
+    })
   }
 
   // check for uniqueness
@@ -197,6 +200,8 @@ class Table {
 
   deleteRows(wheres) {
     const rowsToDelete = this.findRows(wheres)
+    if (!rowsToDelete.length) return []
+
     for (let row of rowsToDelete) {
       Object.entries(row).forEach(([col, value]) => {
         // delete value from unique hashes
@@ -211,7 +216,15 @@ class Table {
       // update rows in this.#data with new row
       this.#data[row.id] = row
     }
-    const result = rowsToDelete.forEach((row) => this.#data[row.id] = null)
+    const result = rowsToDelete.map((row) => {
+      if (this.#data[row.id]) {
+        this.#data[row.id] = null
+        return 'deleted'
+      }
+      return 'could not find'
+    })
+
+    return zip(rowsToDelete, result)
   }
 }
 
