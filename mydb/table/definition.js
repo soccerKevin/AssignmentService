@@ -1,43 +1,80 @@
-import { typesArray } from '../types.js'
-import isPlainObject from '../helpers/isPlainObject.js'
-
-const isValidName = (name) => name && !name.match(/[`!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g)
-
-const isValidType = (type) => type && typesArray.includes(type)
-
-const filterProps = ({ type, indexed, unique }) => ({ type, indexed, unique })
+import Column from './column.js'
 
 class Definition {
   constructor(columns) {
-    this.cols = validateColumns(columns)
+    validateColumns(columns)
+    this.cols = { id: new Column({
+      name:    'id',
+      type:    'int',
+      indexed: true,
+      unique:  true,
+    }) }
+    columns.forEach((column) => {
+      const { name, ...props } = column.getProps()
+      this.cols[name] = props
+    })
+  }
+
+  getCols(row) {
+    const allowed = {}
+    Object.keys(this.cols).forEach((col) => {
+      allowed[col] = row[col]
+    })
+    return allowed
   }
 
   indexedColumns() {
     if (this.indexes) return this.indexes
-    this.indexes = Object.entries(this.cols).map(([colName, { indexed }]) =>
-      indexed ? colName : null
+    this.indexes = Object.entries(this.cols).map(([name, { indexed }]) =>
+      indexed ? name : null
     ).filter((n) => n)
     return this.indexes
   }
+
+  uniqueColumns() {
+    if (this.uniqueCols) return this.uniqueCols
+    this.uniqueCols = Object.entries(this.cols).map(([name, { unique }]) =>
+      unique ? name : null
+    ).filter((n) => n)
+    return this.uniqueCols
+  }
+
+  addColumn(column) {
+    validateColumn(column)
+    const colProps = column.getProps()
+    const { name } = colProps
+    if (this.cols[name])
+      throw new Error(`Can't add column ${name}, it already exists`)
+
+    this.cols[name] = colProps
+    this.indexes = null
+  }
+
+  updateColumn() {
+    validateColumn(column)
+    const colProps = column.getProps()
+    const { name } = colProps
+    if (!this.cols[name])
+      throw new Error(`Can't update column ${name}, it does not exist`)
+
+    this.cols[name] = colProps
+    this.indexes = null
+  }
+
+  removeColumn(columnName) {
+    if (!this.cols[columnName])
+      throw new Error(`Can't remove column ${columnName}, it does not exist`)
+    delete this.cols[columnName]
+  }
 }
 
-const validateColumns = (columns) => {
-  if (!isPlainObject(columns))
-    throw new Error('Invalid column definition: ', columns)
+const validateColumns = (columns) =>
+  columns.map((column) => validateColumn(column))
 
-  const cols = {}
-
-  Object.entries(columns).forEach(([n, props]) => {
-    const name = n.toLowerCase()
-    const type = props.type.toLowerCase()
-
-    if (!isValidName(name)) throw new Error('Invalid column name: ', name, type)
-    if (!isValidType(type)) throw new Error('Invalid column type: ', name, type)
-
-    cols[name] = filterProps(props)
-  })
-
-  return cols
+const validateColumn = (column) => {
+  if (!column instanceof Column)
+    throw new Error(`Column ${column} must be of type Column`)
 }
+
 
 export default Definition
