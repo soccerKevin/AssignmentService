@@ -3,6 +3,8 @@ import dbconn from 'sa/pgdb/connection.js'
 import { toLetter } from 'sa/src/helpers/grade.js'
 const router = express.Router()
 
+import { db, Search, Where } from 'sa/mydb/index.js'
+
 export const path = '/course'
 export const acceptedParams = [
   'id',
@@ -14,7 +16,9 @@ export const acceptedParams = [
 ]
 
 router.get('/:id', async ({ params: { id } }, res) => {
-  const { rows } = await dbconn.query("SELECT * FROM course WHERE id=$1;", [id])
+  const where = new Where({ field: 'id', comparison: '=', value: id })
+  const search = new Search({ table: 'course', wheres: [where] })
+  const rows = db.find(search)
   res.send(rows[0])
 })
 

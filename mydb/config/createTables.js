@@ -29,10 +29,12 @@ const courseStudentDefinition = new Definition([
 ])
 
 const createTables = (db) => {
+  console.log('creating tables')
   db.addTable('course', new Table(courseDefinition))
   db.addTable('meeting_time', new Table(meetingTimeDefinition))
   db.addTable('student', new Table(studentDefinition))
   db.addTable('course_student', new Table(courseStudentDefinition))
+  console.log('tables created')
 }
 
 export default createTables
