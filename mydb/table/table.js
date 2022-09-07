@@ -107,8 +107,11 @@ class Table {
 
       const existingId = this.#uniqueHashes[col][value]
       // if this value already exists and it's not this row, then it's not unique
-      if (![undefined, null, row.id].includes(existingId))
-        throw new Error(`${col}: ${value} must be unique`)
+      if (![undefined, null, row.id].includes(existingId)) {
+        const err = `${col}: ${value} must be unique`
+        throw new Error(err)
+      }
+
       // if (existingId !== undefined && existingId !== null && existingId !== row.id)
       //   throw new Error(`${col}: ${value} must be unique`)
     })

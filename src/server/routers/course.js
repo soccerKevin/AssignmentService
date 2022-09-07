@@ -48,13 +48,8 @@ router.get('/:id/students', async ({ params: { id } }, res) => {
   res.send(rows)
 })
 
-router.post('', async ({ accepted: { keys, vars, values } }, res) => {
-  const { rows } = await dbconn.query(`
-    INSERT INTO course (${keys})
-    VALUES (${vars})
-    RETURNING *;
-  `, values)
-
+router.post('', async ({ accepted: { params } }, res) => {
+  const rows = db.insert('course', params)
   res.send(rows[0])
 })
 
