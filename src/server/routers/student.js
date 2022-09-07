@@ -1,33 +1,28 @@
 import express from 'express'
 import { dbconn } from 'sa/pgdb/connection.js'
 import { toLetter } from 'sa/src/helpers/grade.js'
+import { db, Search, Where } from 'sa/mydb/index.js'
 const router = express.Router()
 
 export const path = '/student'
 export const acceptedParams = ['id', 'name', 'creditCapacity']
 
 router.get('/:id', async ({ params: { id } }, res) => {
-  const { rows } = await dbconn.query("SELECT * FROM student WHERE id=$1;", [id])
+  const where = new Where({ field: 'id', comparison: '=', value: id })
+  const search = new Search({ table: 'student', wheres: [where] })
+  const rows = db.find(search)
   res.send(rows[0])
 })
 
-router.post('', async ({ accepted: { keys, vars, values } }, res) => {
-  const { rows } = await dbconn.query(`
-    INSERT INTO student (${keys})
-    VALUES (${vars})
-    RETURNING *;
-  `, values)
-
+router.post('', async ({ accepted: { params } }, res) => {
+  const rows = db.insert('student', params)
   res.send(rows[0])
 })
 
-router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values } }, res) => {
-  const { rows } = await dbconn.query(`
-    UPDATE student SET ${keyValues}
-    WHERE id = ${id}
-    RETURNING ${keys};
-  `)
-
+router.put('/:id', async ({ params: { id }, accepted: { params } }, res) => {
+  const where = new Where({ field: 'id', comparison: '=', value: id })
+  const search = new Search({ table: 'student', wheres: [where] })
+  const rows = db.update(search, params)
   res.send(rows[0])
 })
 
