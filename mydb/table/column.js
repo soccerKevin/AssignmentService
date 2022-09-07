@@ -19,8 +19,8 @@ const validateProps = (column) => {
   const name = n.toLowerCase()
   const type = t.toLowerCase()
 
-  if (!name || !isValidName(name)) throw new Error('Invalid column name: ', name, type)
-  if (!type || !isValidType(type)) throw new Error('Invalid column type: ', name, type)
+  if (!name || !isValidName(name)) throw new Error(`Invalid column name: ${name}: ${type}`)
+  if (!type || !isValidType(type)) throw new Error(`Invalid column type: ${name}: ${type}`)
 
   return { name, type, indexed, unique }
 }

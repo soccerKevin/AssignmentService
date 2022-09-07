@@ -28,6 +28,7 @@ class DB {
 
   // insert into table
   insert(table, rows) {
+    if (!(rows instanceof Array)) rows = [rows]
     const results = []
     rows.forEach((row) => {
       results.push(this.tables[table].insertRow(row))
@@ -54,7 +55,6 @@ class DB {
   join({ leftSearch, rightSearch, leftColumn, rightColumn, type }) {
     const leftResult = this.find(leftSearch)
     const rightResult = this.find(rightSearch)
-
 
   }
 }
