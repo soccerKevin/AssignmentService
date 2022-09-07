@@ -53,13 +53,10 @@ router.post('', async ({ accepted: { params } }, res) => {
   res.send(rows[0])
 })
 
-router.put('/:id', async ({ params: { id }, accepted: { keys, keyValues, values } }, res) => {
-  const { rows } = await dbconn.query(`
-    UPDATE course SET ${keyValues}
-    WHERE id = ${id}
-    RETURNING ${keys};
-  `)
-
+router.put('/:id', async ({ params: { id }, accepted: { params } }, res) => {
+  const where = new Where({ field: 'id', comparison: '=', value: id })
+  const search = new Search({ table: 'course', wheres: [where] })
+  const rows = db.update(search, params)
   res.send(rows[0])
 })
 
