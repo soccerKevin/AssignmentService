@@ -1,6 +1,7 @@
 import BST from '../helpers/bst.js'
 import Definition from './definition.js'
 import { ACTIONS as TRIGGER_ACTIONS } from './trigger.js'
+import zip from '../helpers/zip.js'
 
 class Table {
   #data
@@ -49,7 +50,7 @@ class Table {
 
   // returns true if row matches
   #rowDoesMatch(row, wheres) {
-    if (!wheres.length) return []
+    if (!(row && wheres.length)) return false
     for (let where of wheres) {
       if (!where.compare(row[where.field]))
         return false
@@ -58,7 +59,7 @@ class Table {
   }
 
   findRows(wheres) {
-    let result = []
+    let result = {}
     let idWhere
     let searchEverything = true
 
@@ -70,10 +71,10 @@ class Table {
       searchEverything = false
       const id = idWhere.value
       if (id instanceof Array) {
-        result = id.map((id) => this.#getRowByIndex(id))
+        id.forEach((id) => result[id] = this.#getRowByIndex(id))
       } else {
         const row = this.#getRowByIndex(id)
-        if (row) result.push(row)
+        if (row) result[id] = row
       }
     } else {
       // narrow result by looking up indexed fields
@@ -88,15 +89,20 @@ class Table {
           else
             foundIds = index.find(value)
 
-          if (foundIds)
-            result = foundIds.map((id) => this.#data[id])
+          if (foundIds) {
+            foundIds.map((id) => {
+              if (!result[id]) {
+                result[id] = this.#data[id]
+              }
+            })
+          }
         }
       }
     }
 
     // Hopefully indexed fields have narrowed the search
     // But if not, search through everything!!!
-    const toSearch = searchEverything ? this.#data : result
+    const toSearch = searchEverything ? this.#data : Object.values(result)
     return toSearch.filter((row) => this.#rowDoesMatch(row, wheres))
   }
 
@@ -107,8 +113,11 @@ class Table {
 
       const existingId = this.#uniqueHashes[col][value]
       // if this value already exists and it's not this row, then it's not unique
-      if (![undefined, null, row.id].includes(existingId))
-        throw new Error(`${col}: ${value} must be unique`)
+      if (![undefined, null, row.id].includes(existingId)) {
+        const err = `${col}: ${value} must be unique`
+        throw new Error(err)
+      }
+
       // if (existingId !== undefined && existingId !== null && existingId !== row.id)
       //   throw new Error(`${col}: ${value} must be unique`)
     })
@@ -194,6 +203,8 @@ class Table {
 
   deleteRows(wheres) {
     const rowsToDelete = this.findRows(wheres)
+    if (!rowsToDelete.length) return []
+
     for (let row of rowsToDelete) {
       Object.entries(row).forEach(([col, value]) => {
         // delete value from unique hashes
@@ -208,7 +219,15 @@ class Table {
       // update rows in this.#data with new row
       this.#data[row.id] = row
     }
-    const result = rowsToDelete.forEach((row) => this.#data[row.id] = null)
+    const result = rowsToDelete.map((row) => {
+      if (this.#data[row.id]) {
+        this.#data[row.id] = null
+        return 'deleted'
+      }
+      return 'could not find'
+    })
+
+    return zip(rowsToDelete, result)
   }
 }
 

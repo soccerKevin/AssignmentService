@@ -23,16 +23,18 @@ const studentDefinition = new Definition([
 ])
 
 const courseStudentDefinition = new Definition([
-  new Column({ name: 'student_id', unique: false, indexed: true, type: 'int' }),
-  new Column({ name: 'course_id',  unique: false, indexed: true, type: 'int' }),
+  new Column({ name: 'student_id', unique: false, indexed: true,  type: 'int' }),
+  new Column({ name: 'course_id',  unique: false, indexed: true,  type: 'int' }),
   new Column({ name: 'grade',      unique: false, indexed: false, type: 'int' }),
 ])
 
 const createTables = (db) => {
+  console.log('creating tables')
   db.addTable('course', new Table(courseDefinition))
   db.addTable('meeting_time', new Table(meetingTimeDefinition))
   db.addTable('student', new Table(studentDefinition))
   db.addTable('course_student', new Table(courseStudentDefinition))
+  console.log('tables created')
 }
 
 export default createTables
