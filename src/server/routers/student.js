@@ -36,15 +36,12 @@ router.get('/:id/courses', async ({ params: { id } }, res) => {
 })
 
 router.get('/:id/grade/average', async ({ params: { id } }, res) => {
-  const { rows } = await dbconn.query(`
-    SELECT
-      SUM(COALESCE(grade, 0)) AS total,
-      COUNT(*) as count
-    FROM course_student
-    WHERE student_id=$1;`,
-    [id]
-  )
-  const { total, count } = rows[0]
+  const where = new Where({ field: 'student_id', comparison: '=', value: id })
+  const search = new Search({ table: 'course_student', wheres: [where] })
+  const rows = db.find(search)
+  let total = 0
+  rows.forEach((row) => total += (row.grade || 0))
+  const count = rows.length
   const decimal = total / count
   const letter = toLetter(decimal)
   res.send({ decimal, letter })
