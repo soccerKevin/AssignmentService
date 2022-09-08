@@ -60,7 +60,6 @@ class DB {
 
     const rightSearchValue = leftResult.map((row) => row[leftColumn])
     rightWhere.value = rightSearchValue
-
     const rightResult = this.find(rightSearch)
 
     leftResult.forEach((leftRow) => {

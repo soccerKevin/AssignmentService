@@ -65,8 +65,8 @@ const seed = (db) => {
   const newCourseStudents = zip(courseIds, studentIds)
   const randomCourseStudents = []
   new Array(10).fill(0).map((v, i) => {
-    for (let k = 0; k < 5; k++) {
-      randomCourseStudents.push([i, rand(11)])
+    for (let k = 0; k < 10; k++) {
+      randomCourseStudents.push([i, k])
     }
   })
   seedCourseStudents(db, randomCourseStudents)

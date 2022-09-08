@@ -27,13 +27,11 @@ router.put('/:id', async ({ params: { id }, accepted: { params } }, res) => {
 })
 
 router.get('/:id/courses', async ({ params: { id } }, res) => {
-  const { rows } = await dbconn.query(`
-    SELECT course.id, name
-    FROM course
-    LEFT JOIN course_student ON course.id = course_student.course_id
-    WHERE course_student.student_id=$1;`,
-    [id]
-  )
+  const leftWhere = new Where({ field: 'student_id', comparison: '=', value: id })
+  const leftSearch = new Search({ table: 'course_student', wheres: [leftWhere] })
+  const rightWhere = new Where({ field: 'id', comparison: '=[]', value: [] })
+  const rightSearch = new Search({ table: 'course', wheres: [rightWhere] })
+  const rows = db.leftJoin({ leftSearch, rightSearch, leftColumn: 'course_id', rightColumn: 'id' })
   res.send(rows)
 })
 
