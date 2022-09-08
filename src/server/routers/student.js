@@ -52,16 +52,19 @@ router.get('/:id/grade/average', async ({ params: { id } }, res) => {
   res.send({ decimal, letter })
 })
 
-router.get('/:studentId/course/:courseId/grade', async ({ params: { studentId, courseId } }, res) => {
-  const { rows } = await dbconn.query(`
-    SELECT grade
-    FROM course_student
-    WHERE student_id=$1 AND course_id=$2;`,
-    [studentId, courseId]
-  )
-  const { grade } = rows[0]
-  const letter = toLetter(grade)
-  res.send({ decimal: grade, letter })
+router.get('/:studentId/course/:courseId/grade', async ({ params: { student_id, course_id } }, res) => {
+  const studentWhere = new Where({ field: 'student_id', comparison: '=', value: student_id })
+  const courseWhere = new Where({ field: 'course_id', comparison: '=', value: course_id })
+  const search = new Search({ table: 'course_student', wheres: [studentWhere, courseWhere] })
+  const rows = db.find(search)
+
+  if (rows.length) {
+    const { grade } = rows[0]
+    const letter = toLetter(grade)
+    res.send({ decimal: grade, letter })
+  } else {
+    res.status(400).send()
+  }
 })
 
 export { router }

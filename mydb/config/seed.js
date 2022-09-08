@@ -10,7 +10,7 @@ const randomStartTime = () =>
 
 const seedCourses = (db) => {
   let name, start_date, end_date, credits, capacity, row
-  const ids = []
+  const courses = []
 
   for (let i = 0; i < 10; i++) {
     name       = faker.name.fullName()
@@ -18,11 +18,12 @@ const seedCourses = (db) => {
     end_date   = faker.date.future(1, start_date)
     credits    = faker.random.numeric(1)
     capacity   = faker.random.numeric(2)
-    row = db.insert('course', { name, start_date, end_date, credits, capacity })
-    ids.push(row[0].id)
+    const course = { name, start_date, end_date, credits, capacity }
+    row = db.insert('course', course)
+    courses.push(course)
   }
 
-  return ids
+  return courses
 }
 
 const seedMeetings = (db, courseIds) => {
@@ -37,14 +38,15 @@ const seedMeetings = (db, courseIds) => {
 
 const seedStudents = (db) => {
   let name, credit_capacity, row
-  const ids = []
+  const students = []
 
   for (let i = 0; i < 12; i++) {
-    row = db.insert('student', { name: faker.name.fullName(), credit_capacity: 12 })
-    ids.push(row[0].id)
+    const student = { name: faker.name.fullName(), credit_capacity: 12 }
+    row = db.insert('student', student)
+    students.push(student)
   }
 
-  return ids
+  return students
 }
 
 const seedCourseStudents = (db, ids) => {
@@ -55,13 +57,16 @@ const seedCourseStudents = (db, ids) => {
 
 const seed = (db) => {
   console.log('seeding db')
-  const courseIds = seedCourses(db)
+  const courses = seedCourses(db)
+  const courseIds = courses.map((c) => c.id)
   seedMeetings(db, courseIds)
-  const studentIds = seedStudents(db)
+  const students = seedStudents(db)
+  const studentIds = students.map((s) => s.id)
   const newCourseStudents = zip(courseIds, studentIds)
   const randomCourseStudents = new Array(10).fill(0).map(() => [rand(11), rand(11)])
-  seedCourseStudents(db, zip(courseIds, studentIds))
+  seedCourseStudents(db, randomCourseStudents)
   console.log('seeding successful')
+  return { courses, students }
 }
 
 export default seed
