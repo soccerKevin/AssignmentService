@@ -9,7 +9,7 @@ class Node {
   }
 
   find(field) {
-    if (this.field === field)
+    if (this.field.toString() === field.toString())
       return this.ids
     if (field < this.field) {
       return this.left?.find(field) || null

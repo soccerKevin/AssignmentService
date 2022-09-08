@@ -38,13 +38,11 @@ router.get('/:id/grade/average', async ({ params: { id } }, res) => {
 })
 
 router.get('/:id/students', async ({ params: { id } }, res) => {
-  const { rows } = await dbconn.query(`
-    SELECT student.id, name
-    FROM student
-    LEFT JOIN course_student ON student.id = course_student.student_id
-    WHERE course_student.course_id=$1;`,
-    [id]
-  )
+  const leftWhere = new Where({ field: 'course_id', comparison: '=', value: id })
+  const leftSearch = new Search({ table: 'course_student', wheres: [leftWhere] })
+  const rightWhere = new Where({ field: 'id', comparison: '=', value: [] })
+  const rightSearch = new Search({ table: 'student', wheres: [rightWhere] })
+  const rows = db.leftJoin({ leftSearch, rightSearch, leftColumn: 'course_id', rightColumn: 'id' })
   res.send(rows)
 })
 

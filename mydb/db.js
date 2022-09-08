@@ -54,7 +54,10 @@ class DB {
   leftJoin({ leftSearch, rightSearch, leftColumn, rightColumn }) {
     const result = []
     const leftResult = this.find(leftSearch)
+    if (!leftResult.length) return []
+
     const rightWhere = rightSearch.getProps().wheres.find((where) => where.field === rightColumn)
+
     const rightSearchValue = leftResult.map((row) => row[leftColumn])
     rightWhere.value = rightSearchValue
 

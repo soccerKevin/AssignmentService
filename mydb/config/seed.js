@@ -63,7 +63,12 @@ const seed = (db) => {
   const students = seedStudents(db)
   const studentIds = students.map((s) => s.id)
   const newCourseStudents = zip(courseIds, studentIds)
-  const randomCourseStudents = new Array(10).fill(0).map(() => [rand(11), rand(11)])
+  const randomCourseStudents = []
+  new Array(10).fill(0).map((v, i) => {
+    for (let k = 0; k < 5; k++) {
+      randomCourseStudents.push([i, rand(11)])
+    }
+  })
   seedCourseStudents(db, randomCourseStudents)
   console.log('seeding successful')
   return { courses, students }
