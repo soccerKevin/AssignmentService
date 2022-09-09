@@ -1,9 +1,22 @@
+import { faker } from '@faker-js/faker'
 import { courseDefinition, courseData } from 'sa/test/fixtures/db.js'
 import createTables from '../config/createTables.js'
 import DB from '../db.js'
 import Table from '../table/table.js'
 import Search from '../search.js'
 import Where from '../where.js'
+
+async function waitUntil(stopObj, func) {
+  return await new Promise(resolve => {
+    const interval = setInterval(() => {
+      func()
+      if (stopObj.doit) {
+        resolve();
+        clearInterval(interval);
+      };
+    }, 400);
+  });
+}
 
 describe('db', () => {
   describe('', () => {
@@ -72,5 +85,35 @@ describe('db', () => {
       expect(joinedRows[0]).toEqual(j)
     })
   })
-})
 
+  describe('backup restore', () => {
+    let db
+
+    const insertStudent = (db) => () => {
+      console.log('insert student')
+      db.insert('student', {
+        name: faker.name.fullName(),
+        credit_capacity: faker.random.numeric(2)
+      })
+    }
+
+    beforeAll(async () => {
+      db = new DB(true, 500)
+      createTables(db)
+      let stop = { doit: false }
+      setTimeout(() => {
+        stop.doit = true
+      }, 1100)
+      await waitUntil(stop, insertStudent(db))
+    })
+
+    test('with date', async () => {
+      db.resetFrom(new Date(Date.now() - 500))
+      const where = new Where({ field: 'id', comparison: '=[]', value: [1, 2, 3, 4] })
+      const search = new Search({ table: 'student', wheres: [where] })
+      const rows = db.find(search)
+      console.log('test rows: ', rows)
+
+    })
+  })
+})

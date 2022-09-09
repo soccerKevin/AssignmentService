@@ -9,6 +9,7 @@ class Table {
   #triggers
   #definition
   #uniqueHashes
+  #uuid
 
   constructor(definition) {
     if (! definition instanceof Definition)
@@ -22,6 +23,33 @@ class Table {
     this.#data = []
     TRIGGER_ACTIONS.forEach((action) => this.#triggers[action] = [])
     this.updateIndexes(definition.indexedColumns())
+  }
+
+  setUUID(uuid) {
+    if (this.#uuid)
+      throw new Error('Cannot reset table uuid')
+    this.#uuid = uuid
+  }
+
+  getData(uuid, start, end) {
+    if (uuid !== this.#uuid)
+      throw new Error('Unauthorized')
+
+    if (!end) end = this.#data.length
+
+    console.log('getData: ', start, end)
+    return {
+      data: this.#data.slice(start, end),
+      start,
+      end,
+    }
+  }
+
+  setData(uuid, data) {
+    if (uuid !== this.#uuid)
+      throw new Error('Unauthorized')
+
+    this.#data = data
   }
 
   updateIndexes(indexes) {
