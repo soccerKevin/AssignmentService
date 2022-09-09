@@ -88,13 +88,16 @@ describe('db', () => {
 
   describe('backup restore', () => {
     let db
+    let students = []
 
     const insertStudent = (db) => () => {
-      console.log('insert student')
-      db.insert('student', {
+      const student = {
         name: faker.name.fullName(),
         credit_capacity: faker.random.numeric(2)
-      })
+      }
+
+      students.push(student)
+      db.insert('student', student)
     }
 
     beforeAll(async () => {
@@ -109,11 +112,10 @@ describe('db', () => {
 
     test('with date', async () => {
       db.resetFrom(new Date(Date.now() - 500))
-      const where = new Where({ field: 'id', comparison: '=[]', value: [1, 2, 3, 4] })
+      const where = new Where({ field: 'id', comparison: '=[]', value: [0, 1, 2, 3, 4] })
       const search = new Search({ table: 'student', wheres: [where] })
       const rows = db.find(search)
-      console.log('test rows: ', rows)
-
+      expect(rows[0]).toEqual({ id: 0, ...students[0] })
     })
   })
 })

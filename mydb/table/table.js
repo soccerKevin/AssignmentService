@@ -37,7 +37,6 @@ class Table {
 
     if (!end) end = this.#data.length
 
-    console.log('getData: ', start, end)
     return {
       data: this.#data.slice(start, end),
       start,

@@ -63,9 +63,10 @@ class DB {
       })
     })
 
+
     // reset table data from backups
-    Object.keys(this.tables).forEach((tableName) => {
-      this.tables[tableName].setData(this.#tableUUIDs[tableName], tableData[tableName])
+    Object.keys(this.tables).forEach((name) => {
+      this.tables[name].setData(this.#tableUUIDs[name], tableData[name])
     })
   }
 
