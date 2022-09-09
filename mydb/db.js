@@ -1,16 +1,95 @@
+import { v4 as uuidv4 } from 'uuid';
 import Table from './table/table.js'
 import Where from './where.js'
 
 class DB {
-  constructor() {
+  #tableUUIDs
+  constructor(withBackups, backupTimeWindow) {
+    // create a new backup image every x minutes (defaults to 5)
+    this.backupTimeWindow = backupTimeWindow || (1000 * 60 * 5)
     this.tables = {}
+    this.backups = []
+    this.#tableUUIDs = {}
+    if (withBackups)
+      this.startBackups()
+  }
+
+  // backups store the difference from the last backup and now
+  createBackup() {
+    const tables = {}
+    let lastBackup = this.backups[this.backups.length - 1]
+    Object.entries(this.tables).forEach(([name, table]) => {
+      let firstIndex
+      if (lastBackup) {
+        const lastTable = lastBackup.tables[name]
+        firstIndex = lastTable.lastIndex
+      } else {
+        firstIndex = 0
+      }
+
+      const {
+        data,
+        end: lastIndex
+      } = table.getData(this.#tableUUIDs[name], firstIndex)
+
+      tables[name] = { name, data, firstIndex, lastIndex }
+    })
+
+    const backup = { date: new Date(), tables }
+    this.backups.push(backup)
+  }
+
+  // compile backups and reset table data to everything previous of date
+  resetFrom(date) {
+    // if no date, reset all data
+    if (!date) {
+      Object.keys(this.tables).forEach((name) => {
+        this.tables[name].setData(this.#tableUUIDs[name], [])
+      })
+      return
+    }
+
+    // get relavant backups
+    const backups = this.backups.filter((bu) => bu.date.getTime() < date.getTime())
+
+    // combine all table data
+    const tableData = {}
+    Object.keys(this.tables).forEach((name) => tableData[name] = [])
+
+    // combine backups from before date to get a complete set of data for each table
+    backups.forEach((backup) => {
+      Object.entries(backup.tables).forEach(([ name, { data } ]) => {
+        tableData[name] = tableData[name].concat(data)
+      })
+    })
+
+
+    // reset table data from backups
+    Object.keys(this.tables).forEach((name) => {
+      this.tables[name].setData(this.#tableUUIDs[name], tableData[name])
+    })
+  }
+
+  // create a new backup every interval of set time
+  startBackups() {
+    this.backupInterval = setInterval((() => {
+      this.createBackup()
+    }).bind(this), this.backupTimeWindow)
+  }
+
+  stopBackups() {
+    clearInterval(this.backupInterval)
   }
 
   addTable(name, table) {
-    if (table instanceof Table)
-      this.tables[name] = table
-    else
+    if (!(table instanceof Table) || this.tables[name])
       throw new Error(`table ${name} is not of type Table`)
+
+    const uuid = uuidv4()
+    // set table uuid so only this db can get and set the table data
+    table.setUUID(uuid)
+    this.#tableUUIDs[name] = uuid
+    this.tables[name] = table
   }
 
   dropTable(name) {
