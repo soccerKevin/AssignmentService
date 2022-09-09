@@ -32,11 +32,14 @@ A simple app to manage students and courses
 - uses a bst for indexes
 - uses hashmaps for uniqueness checks
 - located in /mydb
-- handles multiple where objects and left joins
+- searches handle multiple "where" objects
+- db handles left joins
 - makes backups at set intervals.  
-  - when creating set:
+  - when creating db set:
     - withBackups to true
     - backupTimeWindow to number of miliseconds between each backup.
+  - backups are diffs of the db data, starting from the last backup to the present
+  - compiles backups (diffs) into a complete set of data to reset the db
 - rollback using db.resetFrom(date)
   - you might lose data between most recent backup and from date
 - did not have time for a white ahead log.  this was a looooong project
